@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>spacbr</title>
+    <meta name="description" content="spacbr - Revolutionary digital touch typing. Join the waitlist to be first to experience the future of touch typing.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f6ad55'/%3E%3Ctext x='50' y='65' font-family='system-ui' font-size='40' font-weight='bold' fill='%23323437' text-anchor='middle'%3Esb%3C/text%3E%3C/svg%3E">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://spacbr.com">
+    <meta property="og:title" content="spacbr - The Future of touch typing">
+    <meta property="og:description" content="Revolutionary digital touch typing coming soon. Join the waitlist to be first to experience the future of touch typing.">
+    <meta property="og:image" content="https://spacbr.com/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://spacbr.com">
+    <meta property="twitter:title" content="spacbr - The Future of touch typing">
+    <meta property="twitter:description" content="Revolutionary digital touch typing  coming soon. Join the waitlist to be first to experience the future of touch typing.">
+    <meta property="twitter:image" content="https://spacbr.com/og-image.jpg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #323437;
+            color: #d1d0c5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem 2rem 1rem 2rem;
+            line-height: 1.6;
+            position: relative;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        body.loaded {
+            opacity: 1;
+        }
+
+        /* Skeleton loader styles */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton-logo {
+            width: 200px;
+            height: 64px;
+            border-radius: 8px;
+            margin: 0 auto 3rem;
+        }
+
+        .skeleton-text {
+            height: 20px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .skeleton-input {
+            width: 100%;
+            max-width: 300px;
+            height: 50px;
+            border-radius: 6px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .skeleton-button {
+            width: 100%;
+            max-width: 300px;
+            height: 50px;
+            border-radius: 6px;
+            margin: 0 auto;
+        }
+
+        .skeleton-container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* Optimized grid with paper texture - using transform3d for GPU acceleration */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                /* Grid pattern */
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                /* Paper texture overlay */
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.008) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.008) 0%, transparent 50%),
+                /* Fine paper grain */
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.003) 2px,
+                    rgba(255, 255, 255, 0.003) 3px
+                );
+            background-size: 24px 24px, 24px 24px, 100% 100%, 100% 100%, 100% 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.7;
+            will-change: transform;
+            transform: translate3d(0, 0, 0);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            padding: 2rem 0;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .logo {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            position: relative;
+            display: inline-block;
+            will-change: transform;
+            transition: transform 0.3s ease;
+        }
+
+        .logo .spac {
+            color: #d1d0c5;
+        }
+
+        .logo .br {
+            color: #f6ad55;
+            position: relative;
+        }
+
+        .logo .br::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #f6ad55;
+            animation: underlineGrow 2s ease-in-out infinite alternate;
+            will-change: transform, opacity;
+        }
+
+        @keyframes underlineGrow {
+            0% { transform: scaleX(0.8); opacity: 0.7; }
+            100% { transform: scaleX(1); opacity: 1; }
+        }
+
+        .tagline {
+            font-size: clamp(0.95rem, 2.8vw, 1.1rem);
+            margin-bottom: 3rem;
+            color: #f6ad55;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: lowercase;
+            opacity: 0.9;
+        }
+
+        .status {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            margin-bottom: 0.5rem;
+            color: #646669;
+            font-weight: 400;
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+
+        .description {
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            margin-bottom: 3rem;
+            color: #646669;
+            font-weight: 400;
+            animation: fadeInUp 1s ease 0.7s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .email-section {
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.9s both;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #emailForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .email-input {
+            background: rgba(60, 62, 65, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #d1d0c5;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 1rem 1.5rem;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            height: 50px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .email-input:focus {
+            border-color: #f6ad55;
+            background: rgba(60, 62, 65, 1);
+            box-shadow: 0 0 0 2px rgba(246, 173, 85, 0.2), 0 2px 8px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+            transform: translateY(-1px);
+        }
+
+        .email-input.valid {
+            border-color: #f6ad55;
+            box-shadow: 0 0 0 2px rgba(246, 173, 85, 0.2), 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .email-input.invalid {
+            border-color: #f6ad55;
+            box-shadow: 0 0 0 2px rgba(246, 173, 85, 0.2), 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .email-input::placeholder {
+            color: #646669;
+        }
+
+        .email-input:focus::placeholder {
+            opacity: 0.5;
+        }
+
+        .notify-btn {
+            background: #f6ad55;
+            border: 1px solid #f6ad55;
+            color: #2c2d30;
+            padding: 1rem 1.5rem;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            height: 50px;
+            width: 100%;
+            max-width: 300px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .notify-btn:hover {
+            background: #f8bd6b;
+            border-color: #f8bd6b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(246, 173, 85, 0.3);
+        }
+
+        .notify-btn:focus {
+            outline: 2px solid #f6ad55;
+            outline-offset: 2px;
+        }
+
+        .notify-btn:active {
+            transform: translateY(0);
+        }
+
+        .notify-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .disclaimer {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            color: #646669;
+            margin-top: 1.5rem;
+            font-style: italic;
+            line-height: 1.4;
+            padding: 0.5rem 0;
+            background: transparent;
+        }
+
+        .bottom-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            z-index: 10;
+            padding-top: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .social-icon {
+            width: 24px;
+            height: 24px;
+            fill: #646669;
+            transition: fill 0.3s ease;
+        }
+
+        .social-link {
+            color: #646669;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 400;
+            padding: 0.5rem;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-link:hover {
+            background: rgba(246, 173, 85, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .social-link:focus {
+            outline: 2px solid #f6ad55;
+            outline-offset: 2px;
+        }
+
+        .social-link:hover .social-icon {
+            fill: #f6ad55;
+            transform: scale(1.1);
+        }
+
+        .footer {
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            color: #646669;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+        }
+
+        .success-message {
+            display: none;
+            color: #f6ad55;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        .error-message {
+            display: none;
+            color: #f87171;
+            font-size: clamp(0.8rem, 2.3vw, 0.9rem);
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(248, 113, 113, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #f87171;
+        }
+
+        .retry-btn {
+            background: transparent;
+            border: 1px solid #f6ad55;
+            color: #f6ad55;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            background: rgba(246, 173, 85, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .retry-btn:focus {
+            outline: 2px solid #f6ad55;
+            outline-offset: 2px;
+        }
+
+        /* Blinking cursor effect */
+        .cursor {
+            animation: blink 1s infinite;
+            color: #f6ad55;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Progress indicator */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(100, 102, 105, 0.2);
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #f6ad55;
+            width: 0%;
+            transition: width 0.5s ease;
+            will-change: width;
+        }
+
+        /* Loading state for button */
+        .notify-btn.loading {
+            background: #646669;
+            color: #d1d0c5;
+            border-color: #646669;
+            cursor: not-allowed;
+        }
+
+        .notify-btn.loading::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 1px solid #d1d0c5;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Enhanced mobile responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem 1.5rem 1rem 1.5rem;
+            }
+            
+            .main-content {
+                padding: 1rem 0;
+            }
+            
+            .logo {
+                margin-bottom: 2rem;
+                letter-spacing: -1px;
+            }
+            
+            #emailForm {
+                flex-direction: row;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .email-input {
+                min-width: 0;
+                flex: 1;
+                max-width: none;
+            }
+            
+            .notify-btn {
+                flex-shrink: 0;
+                width: auto;
+                min-width: 120px;
+                max-width: none;
+            }
+            
+            .social-links {
+                gap: 1.5rem;
+            }
+            
+            .bottom-section {
+                gap: 1.5rem;
+                padding-top: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 1rem 0.5rem 1rem;
+            }
+            
+            .main-content {
+                padding: 0.5rem 0;
+            }
+            
+            .logo {
+                margin-bottom: 1.5rem;
+            }
+            
+            .description {
+                margin-bottom: 2rem;
+            }
+            
+            #emailForm {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+            
+            .email-input {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .notify-btn {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .social-links {
+                gap: 1rem;
+            }
+            
+            .bottom-section {
+                gap: 1rem;
+                padding-top: 1rem;
+            }
+        }
+
+        @media (max-width: 320px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            .email-input,
+            .notify-btn {
+                padding: 0.8rem 1rem;
+                font-size: 16px !important; /* Prevents zoom on iOS */
+                height: 48px;
+            }
+            
+            .social-links {
+                gap: 0.8rem;
+            }
+        }
+
+        /* Landscape mobile optimization */
+        @media (max-height: 600px) and (orientation: landscape) {
+            body {
+                padding: 1rem 2rem 0.5rem 2rem;
+            }
+            
+            .main-content {
+                padding: 0.5rem 0;
+            }
+            
+            .logo {
+                margin-bottom: 1rem;
+            }
+            
+            .description {
+                margin-bottom: 1.5rem;
+            }
+            
+            #emailForm {
+                flex-direction: row;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .email-input {
+                flex: 1;
+                max-width: 200px;
+            }
+            
+            .notify-btn {
+                width: auto;
+                min-width: 100px;
+                max-width: none;
+            }
+            
+            .bottom-section {
+                gap: 1rem;
+                padding-top: 1rem;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 280px) {
+            #emailForm {
+                gap: 0.8rem;
+            }
+            
+            .social-links {
+                gap: 0.5rem;
+            }
+            
+            .social-icon {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        /* Prefers reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .logo {
+                transition: none;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .email-input {
+                border-color: #fff;
+            }
+            
+            .social-icon {
+                fill: #fff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="main-content">
+        <!-- Skeleton loader -->
+        <div class="skeleton-container" id="skeletonLoader">
+            <div class="skeleton skeleton-logo"></div>
+            <div class="skeleton skeleton-text" style="width: 60%; margin: 0 auto 0.5rem;"></div>
+            <div class="skeleton skeleton-text" style="width: 80%; margin: 0 auto 3rem;"></div>
+            <div class="skeleton skeleton-input"></div>
+            <div class="skeleton skeleton-button"></div>
+        </div>
+
+        <!-- Actual content -->
+        <div class="container" id="mainContent">
+            <div class="logo">
+                <span class="spac">spac</span><span class="br">br</span>
+            </div>
+            
+            <div class="status">coming soon</div>
+            <div class="description">be the first to experience spacbr</div>
+            
+            <div class="email-section">
+                <form id="emailForm" novalidate>
+                    <input 
+                        type="email" 
+                        class="email-input" 
+                        placeholder="enter your email address"
+                        required
+                        id="emailInput"
+                        autocomplete="email"
+                        spellcheck="false"
+                        aria-label="Email address"
+                        aria-describedby="email-error"
+                    >
+                    <button type="submit" class="notify-btn" id="notifyBtn" aria-describedby="privacy-notice">
+                        join the waitlist
+                    </button>
+                </form>
+                <div class="success-message" id="successMessage" role="status" aria-live="polite">
+                    thank you for joining the waitlist! we're brewing the future of touch typing. you'll be the first to know when we launch.<span class="cursor">.</span>
+                </div>
+                <div class="error-message" id="errorMessage" role="alert" aria-live="polite">
+                    <div id="errorText">something went wrong. please try again.</div>
+                    <button class="retry-btn" id="retryBtn" style="display: none;">retry</button>
+                </div>
+            </div>
+            
+            <div class="disclaimer" id="privacy-notice">
+                no spam, just updates on our launch.
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-section">
+        <div class="social-links">
+            <a href="#" class="social-link" aria-label="Twitter">
+                <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
+                </svg>
+            </a>
+            <a href="#" class="social-link" aria-label="GitHub">
+                <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.300 24 12c0-6.627-5.373-12-12-12z"/>
+                </svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Discord">
+                <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0002 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z"/>
+                </svg>
+            </a>
+        </div>
+
+        <div class="footer">
+            © 2025 spacbr.com
+        </div>
+    </div>
+
+    <script>
+        // Cache DOM elements
+        const emailForm = document.getElementById('emailForm');
+        const emailInput = document.getElementById('emailInput');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const retryBtn = document.getElementById('retryBtn');
+        const notifyBtn = document.getElementById('notifyBtn');
+        const progressBar = document.getElementById('progressBar');
+        const container = document.querySelector('.container');
+        const logo = document.querySelector('.logo');
+        const skeletonLoader = document.getElementById('skeletonLoader');
+        const mainContent = document.getElementById('mainContent');
+        
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzy0H_4dUSfDws_D4OJPRhhEGp4yssq93hyCeBEgPQWgsZeYvPDVtGPC3w-kqrc7WhtkA/exec';
+
+        let retryCount = 0;
+        const MAX_RETRIES = 3;
+
+        // Email validation function
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Real-time email validation
+        function validateEmailInput() {
+            const email = emailInput.value.trim();
+            emailInput.classList.remove('valid', 'invalid');
+            
+            if (email.length > 0) {
+                if (isValidEmail(email)) {
+                    emailInput.classList.add('valid');
+                } else {
+                    emailInput.classList.add('invalid');
+                }
+            }
+        }
+
+        // Debounced progress animation
+        let progressAnimationId;
+        function animateProgress() {
+            if (progressAnimationId) {
+                cancelAnimationFrame(progressAnimationId);
+            }
+            
+            let width = 0;
+            function updateProgress() {
+                width += Math.random() * 3;
+                if (width >= 100) {
+                    width = 100;
+                    progressBar.style.width = width + '%';
+                    return;
+                }
+                progressBar.style.width = width + '%';
+                progressAnimationId = requestAnimationFrame(updateProgress);
+            }
+            updateProgress();
+        }
+
+        // Submit email function
+        async function submitEmail(email) {
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Request timeout')), 10000);
+            });
+            
+            const fetchPromise = fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `email=${encodeURIComponent(email)}&timestamp=${new Date().toISOString()}`
+            });
+            
+            await Promise.race([fetchPromise, timeoutPromise]);
+        }
+
+        // Show success message
+        function showSuccess() {
+            setTimeout(() => {
+                successMessage.style.display = 'block';
+                emailInput.style.display = 'none';
+                notifyBtn.style.display = 'none';
+                
+                // Announce success to screen readers
+                successMessage.setAttribute('aria-live', 'assertive');
+                
+                console.log('Email submitted successfully');
+            }, 1500);
+        }
+
+        // Show error message
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+            
+            // Show retry button if max retries not reached
+            if (retryCount < MAX_RETRIES) {
+                retryBtn.style.display = 'inline-block';
+            }
+        }
+
+        // Handle submission error
+        function handleSubmissionError() {
+            retryCount++;
+            
+            if (retryCount >= MAX_RETRIES) {
+                showError('unable to submit after multiple attempts. please try again later.');
+            } else {
+                showError(`submission failed. attempt ${retryCount} of ${MAX_RETRIES}.`);
+            }
+            
+            setLoadingState(false);
+        }
+
+        // Set loading state
+        function setLoadingState(isLoading) {
+            if (isLoading) {
+                notifyBtn.classList.add('loading');
+                notifyBtn.textContent = 'joining';
+                notifyBtn.disabled = true;
+            } else {
+                notifyBtn.classList.remove('loading');
+                notifyBtn.textContent = 'notify me';
+                notifyBtn.disabled = false;
+            }
+        }
+
+        // Form submission handler
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            
+            // Reset messages
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            retryBtn.style.display = 'none';
+            
+            // Validate email
+            if (!email) {
+                showError('please enter your email address.');
+                emailInput.focus();
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showError('please enter a valid email address.');
+                emailInput.focus();
+                return;
+            }
+            
+            // Add loading state
+            setLoadingState(true);
+            
+            try {
+                await submitEmail(email);
+                showSuccess();
+                retryCount = 0; // Reset retry count on success
+            } catch (error) {
+                console.error('Error submitting email:', error);
+                handleSubmissionError();
+            }
+        }
+
+        // Enhanced interactions - using passive event listeners where possible
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show skeleton loader initially
+            setTimeout(() => {
+                skeletonLoader.style.display = 'none';
+                mainContent.classList.add('visible');
+                document.body.classList.add('loaded');
+            }, 1200);
+
+            // Start progress animation
+            setTimeout(animateProgress, 500);
+            
+            // Logo hover effects - throttled
+            let logoHoverTimeout;
+            logo.addEventListener('mouseenter', function() {
+                clearTimeout(logoHoverTimeout);
+                this.style.transform = 'scale(1.05)';
+            }, { passive: true });
+            
+            logo.addEventListener('mouseleave', function() {
+                logoHoverTimeout = setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 50);
+            }, { passive: true });
+            
+            // Real-time email validation
+            emailInput.addEventListener('input', validateEmailInput, { passive: true });
+            
+            // Clear error message on input
+            emailInput.addEventListener('input', function() {
+                if (errorMessage.style.display === 'block') {
+                    errorMessage.style.display = 'none';
+                    retryBtn.style.display = 'none';
+                }
+            }, { passive: true });
+
+            // Form submission
+            emailForm.addEventListener('submit', handleFormSubmission);
+
+            // Retry button functionality
+            retryBtn.addEventListener('click', function() {
+                handleFormSubmission(new Event('submit'));
+            });
+
+            // Keyboard navigation improvements
+            document.addEventListener('keydown', function(e) {
+                // Enter key on retry button
+                if (e.key === 'Enter' && e.target === retryBtn) {
+                    retryBtn.click();
+                }
+                
+                // Escape key to clear errors
+                if (e.key === 'Escape') {
+                    errorMessage.style.display = 'none';
+                    retryBtn.style.display = 'none';
+                }
+            });
+        });
+
+        // Handle visibility change to pause animations when not visible
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Pause animations when page is not visible
+                const animatedElements = document.querySelectorAll('*');
+                animatedElements.forEach(el => {
+                    el.style.animationPlayState = 'paused';
+                });
+            } else {
+                // Resume animations when page becomes visible
+                const animatedElements = document.querySelectorAll('*');
+                animatedElements.forEach(el => {
+                    el.style.animationPlayState = 'running';
+                });
+            }
+        }, { passive: true });
+
+        // Handle smooth resize transitions
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Force a repaint to ensure smooth transitions
+                document.body.style.transform = 'translateZ(0)';
+                requestAnimationFrame(() => {
+                    document.body.style.transform = '';
+                });
+            }, 100);
+        }, { passive: true });
+    </script>
+</body>
+</html>
